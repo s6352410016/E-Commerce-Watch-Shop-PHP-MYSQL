@@ -1,0 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;600&family=Righteous&display=swap');
+
+* {
+    font-family: 'Kanit', sans-serif;
+    -webkit-user-drag: none;
+    user-select: none;
+}
