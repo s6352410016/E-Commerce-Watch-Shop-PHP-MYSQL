@@ -73,49 +73,60 @@
         }
 
         // update product
-        public function updateProduct(){
-            $strSql = '';
-            if(isset($this->productImage) && $this->productImage !== ''){
-                $strSql = 'UPDATE product_tb SET productName = :productName , productPrice = :productPrice , productImage = :productImage , categoryId = :categoryId , modifyDate = :modifyDate WHERE productId = :productId';  
-            }else{
-                $strSql = 'UPDATE product_tb SET productName = :productName , productPrice = :productPrice , categoryId = :categoryId , modifyDate = :modifyDate WHERE productId = :productId';
-            }
+        public function updateProductWithImage(){
+            $strSql = 'UPDATE product_tb SET productName = :productName , productPrice = :productPrice , productImage = :productImage , categoryId = :categoryId , modifyDate = :modifyDate WHERE productId = :productId';  
             $stmt = $this->conn->prepare($strSql);
             $this->productId = intval(strip_tags(stripslashes($this->productId)));
             $this->productName = htmlspecialchars(strip_tags(stripslashes($this->productName)));
             $this->productPrice = intval(strip_tags(stripslashes($this->productPrice)));
-            if(isset($this->productImage) && $this->productImage !== ''){
-                $this->productImage = htmlspecialchars(strip_tags(stripslashes($this->productImage)));
-            }
+            $this->productImage = htmlspecialchars(strip_tags(stripslashes($this->productImage)));
             $this->categoryId = intval(strip_tags(stripslashes($this->categoryId)));
             $this->modifyDate = date('Y-m-d');
             $stmt->bindParam(':productId', $this->productId);
             $stmt->bindParam(':productName', $this->productName);
             $stmt->bindParam(':productPrice', $this->productPrice);
-            if(isset($this->productImage) && $this->productImage !== ''){
-                $stmt->bindParam(':productImage', $this->productImage);
-            }
+            $stmt->bindParam(':productImage', $this->productImage);
             $stmt->bindParam(':categoryId', $this->categoryId);
             $stmt->bindParam(':modifyDate', $this->modifyDate);
+
             if($stmt->execute()){
                 return true;
             }else{
                 return false;
             }
-    }
+        }  
+        
+        public function updateProduct(){
+            $strSql = 'UPDATE product_tb SET productName = :productName , productPrice = :productPrice , categoryId = :categoryId , modifyDate = :modifyDate WHERE productId = :productId';
+            $stmt = $this->conn->prepare($strSql);
+            $this->productId = intval(strip_tags(stripslashes($this->productId)));
+            $this->productName = htmlspecialchars(strip_tags(stripslashes($this->productName)));
+            $this->productPrice = intval(strip_tags(stripslashes($this->productPrice)));
+            $this->categoryId = intval(strip_tags(stripslashes($this->categoryId)));
+            $this->modifyDate = date('Y-m-d');
+            $stmt->bindParam(':productId', $this->productId);
+            $stmt->bindParam(':productName', $this->productName);
+            $stmt->bindParam(':productPrice', $this->productPrice);
+            $stmt->bindParam(':categoryId', $this->categoryId);
+            $stmt->bindParam(':modifyDate', $this->modifyDate);
 
-    // delet product
-    public function deleteProduct(){
-        $strSql = 'DELETE FROM product_tb WHERE productId = :productId';
-        $stmt = $this->conn->prepare($strSql);
-        $this->productId = intval(strip_tags(stripslashes($this->productId)));
-        $stmt->bindParam(':productId', $this->productId);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
+            if($stmt->execute()){
+                return true;
+            }else{
+                return false;
+            }
         }
-    }
-}
 
-?>
+        // delet product
+        public function deleteProduct(){
+            $strSql = 'DELETE FROM product_tb WHERE productId = :productId';
+            $stmt = $this->conn->prepare($strSql);
+            $this->productId = intval(strip_tags(stripslashes($this->productId)));
+            $stmt->bindParam(':productId', $this->productId);
+            if($stmt->execute()){
+                return true;
+            }else{
+                return false;
+            }
+        }
+}
