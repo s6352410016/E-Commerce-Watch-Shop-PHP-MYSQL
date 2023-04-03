@@ -48,88 +48,78 @@
     </nav>
     <?php
     require_once('../config/ConnectDB.php');
-    require_once('../controllers/Product.php');
+    require_once('../controllers/Carousel.php');
     $connObj = new ConnectDB();
     $conn = $connObj->connectDB();
-    $productObj = new Product($conn);
-    $productObj->productId = $_GET['id'];
-    $stmt = $productObj->getProductById();
+    $carouselObj = new Carousel($conn);
+    $carouselObj->carouselId = $_GET['id'];
+    $stmt = $carouselObj->getCarouselByCatrouselId();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     ?>
     <div class="container mt-5" style="width: 1500px;">
-        <h3 class="text-center">แก้ไขสินค้า</h3>
+        <h3 class="text-center">แก้ไขรูปสินค้า</h3>
         <form action="<?php $_SERVER['PHP_SELF']; ?>" class="mt-3" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
-                <label class="form-label">ชื่อสินค้า:</label>
-                <input type="text" class="form-control" name="productName" required value="<?php echo $row['productName']; ?>">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">ราคาสินค้า:</label>
-                <input type="number" class="form-control" name="productPrice" min="1" pattern="\d*" required value="<?php echo $row['productPrice']; ?>">
+                <label class="form-label">ไอดีสินค้า:</label>
+                <input type="number" class="form-control" name="productId" required value="<?php echo $row['productId']; ?>" min="1" pattern="\d*">
             </div>
             <div class="mb-3">
                 <label class="form-label">รูปสินค้า:</label>
-                <input accept="image/png , image/jpeg , image/webp" id='fileImg' type="file" class="form-control" name="productImage" min="1" pattern="\d*">
+                <input accept="image/png , image/jpeg , image/webp" id='fileImg' type="file" class="form-control" name="carouselImage">
             </div>
-            <img id='closeImg' src='../images/<?php echo $row['productImage']; ?>' style='width: 200px; height: 200px;'>
+            <img id='closeImg' src='../images/previewProductImg/<?php echo $row['carouselImage']; ?>' style='width: 200px; height: 200px;'>
             <img id='previewImg'>
-            <div class="mb-3">
-                <label class="form-label">รหัสประเภทสินค้า:</label>
-                <input type="number" class="form-control" name="categoryId" min="1" pattern="\d*" required value="<?php echo $row['categoryId']; ?>">
-            </div>
-            <button name="editProduct" type="submit" class="btn btn-primary">แก้ไขสินค้า</button>
+            <br>
+            <br>
+            <button name="editImgProduct" type="submit" class="btn btn-primary">แก้ไขรูปสินค้า</button>
             &nbsp;&nbsp;&nbsp;
-            <a href="dashboard.php" class="btn btn-success">แสดงสินค้าทั้งหมด</a>
+            <a href="showCarouselProduct.php" class="btn btn-success">แสดงรูปสินค้าทั้งหมด</a>
         </form>
     </div>
     <?php
     require_once('../config/ConnectDB.php');
-    require_once('../controllers/Product.php');
+    require_once('../controllers/Carousel.php');
     $connObj = new ConnectDB();
     $conn = $connObj->connectDB();
-    $productObj = new Product($conn);
+    $carouselObj = new Carousel($conn);
 
-    if (isset($_POST['editProduct'])) {
-        if (isset($_FILES['productImage']['name'])) {
-            $productObj->productName = $_POST['productName'];
-            $productObj->productPrice = $_POST['productPrice'];
-            $productObj->categoryId = $_POST['categoryId'];
-            $productObj->productId = $_GET['id'];
+    if (isset($_POST['editImgProduct'])) {
+        if (isset($_FILES['carouselImage']['name'])) {
+            $carouselObj->carouselId = $_GET['id'];
+            $carouselObj->productId = $_POST['productId'];
 
-            $file = explode('.', $_FILES['productImage']['name']);
+            $file = explode('.', $_FILES['carouselImage']['name']);
             $fileExtension = end($file);
-            $newFileName = 'product_' . md5(uniqid()) . '.' . $fileExtension;
+            $newFileName = 'product_preview_' . md5(uniqid()) . '.' . $fileExtension;
 
-            if (move_uploaded_file($_FILES['productImage']['tmp_name'], '../images/' . $newFileName)) {
-                $productObj->productImage = $newFileName;
-                if ($productObj->updateProductWithImage()) {
+            if (move_uploaded_file($_FILES['carouselImage']['tmp_name'], '../images/previewProductImg/' . $newFileName)) {
+                $carouselObj->carouselImage = $newFileName;
+                if ($carouselObj->updateCarouselWithImage()) {
                     echo "<script>
                         Swal.fire(
-                            'แก้ไขสินค้าสำเร็จแล้ว!',
-                            'คุณสามารถดูสินค้าที่มีในระบบได้',
+                            'แก้ไขรูปสินค้าสำเร็จแล้ว!',
+                            'คุณสามารถดูรูปสินค้าที่มีในระบบได้',
                             'success'
                         ).then(() => {
-                            window.location.href = 'dashboard.php';
+                            window.location.href = 'showCarouselProduct.php';
                         });
                      </script>";
                 }
             }
         }
 
-        if (empty($_FILES['productImage']['name'])) {
-            $productObj->productName = $_POST['productName'];
-            $productObj->productPrice = $_POST['productPrice'];
-            $productObj->categoryId = $_POST['categoryId'];
-            $productObj->productId = $_GET['id'];
+        if (empty($_FILES['carouselImage']['name'])) {
+            $carouselObj->carouselId = $_GET['id'];
+            $carouselObj->productId = $_POST['productId'];
 
-            if ($productObj->updateProduct()) {
+            if ($carouselObj->updateCarousel()) {
                 echo "<script>
                         Swal.fire(
-                            'แก้ไขสินค้าสำเร็จแล้ว!',
-                            'คุณสามารถดูสินค้าที่มีในระบบได้',
+                            'แก้ไขลายละเอียดรูปสินค้าสำเร็จแล้ว!',
+                            'คุณสามารถดูรูปสินค้าที่มีในระบบได้',
                             'success'
                         ).then(() => {
-                            window.location.href = 'dashboard.php';
+                            window.location.href = 'showCarouselProduct.php';
                         });
                      </script>";
             }

@@ -24,6 +24,9 @@
                         <a class="nav-link active" aria-current="page" href="index.php">หน้าหลัก</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="login.php">เข้าสู่ระบบ</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="register.php">สมัครสมาชิก</a>
                     </li>
                 </ul>

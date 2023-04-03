@@ -49,7 +49,7 @@
             ?>
         </div>
     </nav>
-    <div class="container" style="min-height: 100vh;">
+    <div class="container" style="min-height: 100vh; width: 1200px;">
         <br>
         <h3>รายการ: สินค้าทั้งหมด</h3>
         <div class="d-flex">

@@ -27,7 +27,7 @@
                         <a class="nav-link active" aria-current="page" href="register.php">สมัครสมาชิก</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">แอดมิน</a>
+                        <a class="nav-link active" href="loginAdmin.php">แอดมิน</a>
                     </li>
                 </ul>
             </div>

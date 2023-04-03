@@ -107,6 +107,7 @@
         $orderDetailObj->userAddress = $_POST['userAddress'];
         $orderDetailObj->userPostCode = $_POST['userPostCode'];
         $orderDetailObj->userPhone = $_POST['userPhone'];
+        $orderDetailObj->orderTotalPrice = $_POST['productQuantity'] * $row2['productPrice'];
         if ($orderDetailObj->updateOrderProductByOrderId()) {
             echo "<script>
                     Swal.fire(

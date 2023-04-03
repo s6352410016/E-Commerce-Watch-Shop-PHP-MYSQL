@@ -31,9 +31,6 @@
                         <a class="nav-link active" aria-current="page" href="showCarouselProduct.php">จัดการรูปสินค้าทั้งหมด</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="showOrderDetail.php">จัดการคำสั่งซื้อสินค้า</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="showUser.php">จัดการสมาชิก</a>
                     </li>
                     <li class="nav-item">
@@ -56,17 +53,20 @@
         </div>
     </nav>
     <div class="container mt-5" style="width: 1500px;">
-        <h3 class="text-center">จัดการสินค้า</h3>
-        <a href="createProduct.php" class="btn btn-primary">เพิ่มสินค้า</a>
+        <h3 class="text-center">จัดการคำสั่งซื้อสินค้า</h3>
+        <a href="createOrderDetail.php" class="btn btn-primary">เพิ่มรายการสั่งซื้อสินค้า</a>
         <table class="table mt-3">
             <thead>
                 <tr>
-                    <th scope="col" style="width: 10%;">ไอดีสินค้า</th>
-                    <th scope="col">ชื่อสินค้า</th>
-                    <th scope="col" style="width: 10%;">ราคาสินค้า</th>
-                    <th scope="col">รูปสินค้า</th>
-                    <th scope="col" style="width: 15%;">รหัสประเภทสินค้า</th>
-                    <th scope="col" style="width: 10%;">วันที่แก้ไข</th>
+                    <th scope="col" style="width: 10%;">รหัสคำสั่งซื้อ</th>
+                    <th scope="col" style="width: 15%;">ชื่อผู้ใช้ที่สั่งซื้อ</th>
+                    <th scope="col" style="width: 15%;">ชื่อสินค้าที่สั่งซื้อ</th>
+                    <th scope="col" style="width: 15%;">รูปสินค้าที่สั่งซื้อ</th>
+                    <th scope="col" style="width: 15%;">จำนวนสินค้าที่สั่งซื้อ</th>
+                    <th scope="col" style="width: 10%;">ราคารวม</th>
+                    <th scope="col" style="width: 10%;">ที่อยู่จัดส่ง</th>
+                    <th scope="col" style="width: 10%;">เบอร์โทรศัพท์</th>
+                    <th scope="col" style="width: 10%;">ป/ด/ว</th>
                     <th scope="col">แก้ไข</th>
                     <th scope="col">ลบ</th>
                 </tr>
@@ -74,29 +74,41 @@
             <tbody>
                 <?php
                 require_once('../config/ConnectDB.php');
+                require_once('../controllers/OrderDetail.php');
                 require_once('../controllers/Product.php');
 
                 $connObj = new ConnectDB();
                 $conn = $connObj->connectDB();
                 $productObj = new Product($conn);
-                $stmt = $productObj->getAllProducts();
+                $orderDetailObj = new OrderDetail($conn);
+                $stmt = $orderDetailObj->getAllOrderDetail();
+
                 if ($stmt->rowCount() > 0) {
                     while ($rows = $stmt->fetch(PDO::FETCH_ASSOC)) {
                         extract($rows);
+
+                        $productObj->productId = $productId;
+                        $stmt1 = $productObj->getProductById();
+                        $rows1 = $stmt1->fetch(PDO::FETCH_ASSOC);
+                        extract($rows1);
+
                         echo "<tr>
-                                    <td>" . $productId . "</td>
+                                    <td>" . $orderId  . "</td>
+                                    <td>" . $userFirstname . " " . $userLastname . "</td>
                                     <td>" . $productName . "</td>
-                                    <td>" . number_format($productPrice) . " บาท</td>
                                     <td><img src='../images/" . $productImage . "' style='width: 150px; height: 150px'></td>
-                                    <td>" . $categoryId . "</td>
+                                    <td>" . $productQuantity . "</td>
+                                    <td>" . number_format($productTotalPrice) . " บาท</td>
+                                    <td>" . $userAddress . " " . $userPostCode . "</td>
+                                    <td>" . $userPhone . "</td>
                                     <td>" . $modifyDate . "</td>
-                                    <td><a class='btn btn-success' href='editProduct.php?id=" . $productId . "'>แก้ไข</a></td>
-                                    <td><a class='btn btn-danger' onclick='deleteProduct({$productId});'>ลบ</a></td>
+                                    <td><a class='btn btn-success' href='editOrderDetail.php?id=" . $orderId . "'>แก้ไข</a></td>
+                                    <td><a class='btn btn-danger' onclick='deleteOrderDetail({$orderId});'>ลบ</a></td>
                                 </tr>";
                     }
                 } else {
                     echo "<tr>
-                            <td colspan='8' class='text-center'>ไม่มีข้อมูลสินค้า</td>
+                            <td colspan='11' class='text-center'>ไม่มีข้อมูล</td>
                           </tr>";
                 }
                 ?>
@@ -110,10 +122,10 @@
         </div>
     </nav>
     <script>
-        function deleteProduct(productId) {
+        function deleteOrderDetail(orderId) {
             Swal.fire({
-                title: "คุณต้องการลบสินค้านี้ไหม?",
-                text: "หากลบแล้วจะไม่มีสินค้านี้อีกต่อไป!",
+                title: "คุณต้องการลบคำสั่งซื้อนี้ไหม?",
+                text: "หากลบแล้วจะไม่มีคำสั่งซื้อนี้อีกต่อไป!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
@@ -121,11 +133,11 @@
                 confirmButtonText: "Yes, delete it!"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire("ลบสินค้านี้สำเร็จแล้ว!",
-                        "สินค้านี้ถูกลบออกแล้ว",
+                    Swal.fire("ลบคำสั่งซื้อนี้สำเร็จแล้ว!",
+                        "คำสั่งซื้อนี้ถูกลบออกแล้ว",
                         "success"
                     ).then(() => {
-                        window.location.href = `deleteProduct.php?productId=${productId}`;
+                        window.location.href = `deleteOrderDetail.php?orderId=${orderId}`;
                     });
                 }
             });

@@ -54,10 +54,9 @@
         <table class="table mt-3">
             <thead>
                 <tr>
-                    <th scope="col">ชื่อจริง:</th>
-                    <th scope="col">นามสกุล:</th>
-                    <th scope="col">รูปสินค้า:</th>
+                    <th scope="col" style="width: 15%;">ชื่อจริง-นามสกุล:</th>
                     <th scope="col">ชื่อสินค้า:</th>
+                    <th scope="col">รูปสินค้า:</th>
                     <th scope="col">จำนวน:</th>
                     <th scope="col">ราคาต่อชิ้น:</th>
                     <th scope="col">ราคารวม:</th>
@@ -81,10 +80,9 @@
                     while ($rows = $stmt->fetch(PDO::FETCH_ASSOC)) {
                         extract($rows);
                         echo "<tr>
-                                <td style='width: 10%'>{$userFirstname}</td>
-                                <td>{$userLastname}</td>
-                                <td><img style='width: 150px; height: 150px;' src='../images/{$productImage}'></td>
+                                <td style='width: 10%'>{$userFirstname} {$userLastname}</td>
                                 <td>{$productName}</td>
+                                <td><img style='width: 150px; height: 150px;' src='../images/{$productImage}'></td>
                                 <td>{$productQuantity}</td>
                                 <td style='width: 10%'>" . number_format($productPrice) . " บาท</td>
                                 <td>" . number_format($productTotalPrice) . " บาท</td>

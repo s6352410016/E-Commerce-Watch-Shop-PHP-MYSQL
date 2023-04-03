@@ -25,9 +25,6 @@
                         <a class="nav-link active" aria-current="page" href="dashboard.php">จัดการสินค้า</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="showCategoryProduct.php">จัดการประเภทสินค้า</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="showCarouselProduct.php">จัดการรูปสินค้าทั้งหมด</a>
                     </li>
                     <li class="nav-item">
@@ -55,18 +52,15 @@
                                                                     ?>
         </div>
     </nav>
-    <div class="container mt-5" style="width: 1500px;">
-        <h3 class="text-center">จัดการสินค้า</h3>
-        <a href="createProduct.php" class="btn btn-primary">เพิ่มสินค้า</a>
+    <div class="container mt-5" style="width: 800px;">
+        <h3 class="text-center">จัดการประเภทสินค้า</h3>
+        <a href="createCategoryProduct.php" class="btn btn-primary">เพิ่มประเภทสินค้า</a>
         <table class="table mt-3">
             <thead>
                 <tr>
-                    <th scope="col" style="width: 10%;">ไอดีสินค้า</th>
-                    <th scope="col">ชื่อสินค้า</th>
-                    <th scope="col" style="width: 10%;">ราคาสินค้า</th>
-                    <th scope="col">รูปสินค้า</th>
-                    <th scope="col" style="width: 15%;">รหัสประเภทสินค้า</th>
-                    <th scope="col" style="width: 10%;">วันที่แก้ไข</th>
+                    <th scope="col">ไอดีประเภทสินค้า</th>
+                    <th scope="col">แบรนด์สินค้า</th>
+                    <th scope="col">วันที่แก้ไข</th>
                     <th scope="col">แก้ไข</th>
                     <th scope="col">ลบ</th>
                 </tr>
@@ -74,29 +68,27 @@
             <tbody>
                 <?php
                 require_once('../config/ConnectDB.php');
-                require_once('../controllers/Product.php');
+                require_once('../controllers/Category.php');
 
                 $connObj = new ConnectDB();
                 $conn = $connObj->connectDB();
-                $productObj = new Product($conn);
-                $stmt = $productObj->getAllProducts();
+                $categoryObj = new Category($conn);
+                $stmt = $categoryObj->getAllCategories();
+
                 if ($stmt->rowCount() > 0) {
                     while ($rows = $stmt->fetch(PDO::FETCH_ASSOC)) {
                         extract($rows);
                         echo "<tr>
-                                    <td>" . $productId . "</td>
-                                    <td>" . $productName . "</td>
-                                    <td>" . number_format($productPrice) . " บาท</td>
-                                    <td><img src='../images/" . $productImage . "' style='width: 150px; height: 150px'></td>
-                                    <td>" . $categoryId . "</td>
+                                    <td>" . $categoryId  . "</td>
+                                    <td>" . $categoryBrand . "</td>
                                     <td>" . $modifyDate . "</td>
-                                    <td><a class='btn btn-success' href='editProduct.php?id=" . $productId . "'>แก้ไข</a></td>
-                                    <td><a class='btn btn-danger' onclick='deleteProduct({$productId});'>ลบ</a></td>
+                                    <td><a class='btn btn-success' href='editCategoryProduct.php?id=" . $categoryId . "'>แก้ไข</a></td>
+                                    <td><a class='btn btn-danger' onclick='deleteCategoryProduct({$categoryId});'>ลบ</a></td>
                                 </tr>";
                     }
                 } else {
                     echo "<tr>
-                            <td colspan='8' class='text-center'>ไม่มีข้อมูลสินค้า</td>
+                            <td colspan='5'>ไม่มีข้อมูล</td>
                           </tr>";
                 }
                 ?>
@@ -110,10 +102,10 @@
         </div>
     </nav>
     <script>
-        function deleteProduct(productId) {
+        function deleteCategoryProduct(categoryId) {
             Swal.fire({
-                title: "คุณต้องการลบสินค้านี้ไหม?",
-                text: "หากลบแล้วจะไม่มีสินค้านี้อีกต่อไป!",
+                title: "คุณต้องการลบประเภทสินค้านี้ไหม?",
+                text: "หากลบแล้วจะไม่มีประเภทสินค้านี้อีกต่อไป!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
@@ -121,11 +113,11 @@
                 confirmButtonText: "Yes, delete it!"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire("ลบสินค้านี้สำเร็จแล้ว!",
-                        "สินค้านี้ถูกลบออกแล้ว",
+                    Swal.fire("ลบประเภทสินค้านี้สำเร็จแล้ว!",
+                        "ประเภทสินค้านี้ถูกลบออกแล้ว",
                         "success"
                     ).then(() => {
-                        window.location.href = `deleteProduct.php?productId=${productId}`;
+                        window.location.href = `deleteCategoryProduct.php?categoryId=${categoryId}`;
                     });
                 }
             });

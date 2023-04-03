@@ -22,9 +22,6 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="index.php">หน้าหลัก</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="login.php">จัดการสินค้า</a>
                     </li>
                     <li class="nav-item">
@@ -46,92 +43,50 @@
                                                                     ?>
         </div>
     </nav>
-    <?php
-    require_once('../config/ConnectDB.php');
-    require_once('../controllers/Product.php');
-    $connObj = new ConnectDB();
-    $conn = $connObj->connectDB();
-    $productObj = new Product($conn);
-    $productObj->productId = $_GET['id'];
-    $stmt = $productObj->getProductById();
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    ?>
-    <div class="container mt-5" style="width: 1500px;">
-        <h3 class="text-center">แก้ไขสินค้า</h3>
-        <form action="<?php $_SERVER['PHP_SELF']; ?>" class="mt-3" method="POST" enctype="multipart/form-data">
+    <div class="container mt-5" style="width: 800px;">
+        <h3 class="text-center">เพิ่มรูปสินค้า</h3>
+        <form class="mt-3" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
-                <label class="form-label">ชื่อสินค้า:</label>
-                <input type="text" class="form-control" name="productName" required value="<?php echo $row['productName']; ?>">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">ราคาสินค้า:</label>
-                <input type="number" class="form-control" name="productPrice" min="1" pattern="\d*" required value="<?php echo $row['productPrice']; ?>">
+                <label class="form-label">ไอดีสินค้า:</label>
+                <input type="number" class="form-control" name="productId" required min="1" pattern="\d*">
             </div>
             <div class="mb-3">
                 <label class="form-label">รูปสินค้า:</label>
-                <input accept="image/png , image/jpeg , image/webp" id='fileImg' type="file" class="form-control" name="productImage" min="1" pattern="\d*">
+                <input name="carouselImage" accept="image/png , image/jpeg , image/webp" id='fileImg' type="file" class="form-control" required>
             </div>
-            <img id='closeImg' src='../images/<?php echo $row['productImage']; ?>' style='width: 200px; height: 200px;'>
             <img id='previewImg'>
-            <div class="mb-3">
-                <label class="form-label">รหัสประเภทสินค้า:</label>
-                <input type="number" class="form-control" name="categoryId" min="1" pattern="\d*" required value="<?php echo $row['categoryId']; ?>">
-            </div>
-            <button name="editProduct" type="submit" class="btn btn-primary">แก้ไขสินค้า</button>
+            <br>
+            <button type="submit" name="createImageProduct" class="btn btn-primary">เพิ่มรูปสินค้า</button>
             &nbsp;&nbsp;&nbsp;
-            <a href="dashboard.php" class="btn btn-success">แสดงสินค้าทั้งหมด</a>
+            <a href="showCarouselProduct.php" class="btn btn-success">แสดงรูปสินค้าทั้งหมด</a>
         </form>
     </div>
     <?php
     require_once('../config/ConnectDB.php');
-    require_once('../controllers/Product.php');
+    require_once('../controllers/Carousel.php');
     $connObj = new ConnectDB();
     $conn = $connObj->connectDB();
-    $productObj = new Product($conn);
+    $carouselObj = new Carousel($conn);
 
-    if (isset($_POST['editProduct'])) {
-        if (isset($_FILES['productImage']['name'])) {
-            $productObj->productName = $_POST['productName'];
-            $productObj->productPrice = $_POST['productPrice'];
-            $productObj->categoryId = $_POST['categoryId'];
-            $productObj->productId = $_GET['id'];
+    if (isset($_POST['productId']) && isset($_FILES['carouselImage'])) {
+        $carouselObj->productId = $_POST['productId'];
 
-            $file = explode('.', $_FILES['productImage']['name']);
-            $fileExtension = end($file);
-            $newFileName = 'product_' . md5(uniqid()) . '.' . $fileExtension;
+        $file = explode('.', $_FILES['carouselImage']['name']);
+        $fileExtension = end($file);
+        $newFileName = 'product_preview_' . md5(uniqid()) . '.' . $fileExtension;
 
-            if (move_uploaded_file($_FILES['productImage']['tmp_name'], '../images/' . $newFileName)) {
-                $productObj->productImage = $newFileName;
-                if ($productObj->updateProductWithImage()) {
-                    echo "<script>
-                        Swal.fire(
-                            'แก้ไขสินค้าสำเร็จแล้ว!',
-                            'คุณสามารถดูสินค้าที่มีในระบบได้',
-                            'success'
-                        ).then(() => {
-                            window.location.href = 'dashboard.php';
-                        });
-                     </script>";
-                }
-            }
-        }
-
-        if (empty($_FILES['productImage']['name'])) {
-            $productObj->productName = $_POST['productName'];
-            $productObj->productPrice = $_POST['productPrice'];
-            $productObj->categoryId = $_POST['categoryId'];
-            $productObj->productId = $_GET['id'];
-
-            if ($productObj->updateProduct()) {
+        if (move_uploaded_file($_FILES['carouselImage']['tmp_name'], '../images/previewProductImg/' . $newFileName)) {
+            $carouselObj->carouselImage = $newFileName;
+            if ($carouselObj->createCarousel()) {
                 echo "<script>
                         Swal.fire(
-                            'แก้ไขสินค้าสำเร็จแล้ว!',
-                            'คุณสามารถดูสินค้าที่มีในระบบได้',
+                            'เพิ่มรูปสินค้าสำเร็จแล้ว!',
+                            'คุณสามารถดูรูปสินค้าที่มีในระบบได้',
                             'success'
                         ).then(() => {
-                            window.location.href = 'dashboard.php';
+                            window.location.href = 'showCarouselProduct.php';
                         });
-                     </script>";
+                      </script>";
             }
         }
     }
@@ -142,11 +97,9 @@
             <a class="navbar-brand">เพื่อการศึกษาเท่านั้น</a>
         </div>
     </nav>
-
     <script>
         const fileImg = document.getElementById('fileImg');
         const previewImg = document.getElementById('previewImg');
-        const closeImg = document.getElementById('closeImg');
 
         fileImg.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
@@ -155,7 +108,6 @@
                 previewImg.style.width = '200px';
                 previewImg.style.height = '200px';
                 previewImg.style.marginBottom = '1rem';
-                closeImg.style.display = 'none';
             }
         });
     </script>

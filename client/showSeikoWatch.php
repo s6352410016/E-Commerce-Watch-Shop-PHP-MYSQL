@@ -30,7 +30,7 @@
                         <a class="nav-link active" aria-current="page" href="register.php">สมัครสมาชิก</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">แอดมิน</a>
+                        <a class="nav-link active" href="loginAdmin.php">แอดมิน</a>
                     </li>
                 </ul>
             </div>
@@ -49,7 +49,7 @@
             ?>
         </div>
     </nav>
-    <div class="container">
+    <div class="container" style="min-height: 100vh; width: 1200px;">
         <br>
         <h3>รายการ: สินค้าทั้งหมด</h3>
         <div class="d-flex">

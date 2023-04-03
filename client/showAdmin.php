@@ -1,4 +1,4 @@
-<?php session_start(); ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,9 +25,6 @@
                         <a class="nav-link active" aria-current="page" href="dashboard.php">จัดการสินค้า</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="showCategoryProduct.php">จัดการประเภทสินค้า</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="showCarouselProduct.php">จัดการรูปสินค้าทั้งหมด</a>
                     </li>
                     <li class="nav-item">
@@ -37,7 +34,7 @@
                         <a class="nav-link active" aria-current="page" href="showUser.php">จัดการสมาชิก</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="showAdmin.php">จัดการแอดมิน</a>
+                        <a class="nav-link active" aria-current="page" href="index.php">ออกจากระบบ</a>
                     </li>
                 </ul>
             </div>
@@ -55,48 +52,47 @@
                                                                     ?>
         </div>
     </nav>
-    <div class="container mt-5" style="width: 1500px;">
-        <h3 class="text-center">จัดการสินค้า</h3>
-        <a href="createProduct.php" class="btn btn-primary">เพิ่มสินค้า</a>
+    <div class="container mt-5" style="width: 1000px;">
+        <h3 class="text-center">จัดการแอดมินในระบบ</h3>
+        <a href="createAdmin.php" class="btn btn-primary">เพิ่มแอดมิน</a>
         <table class="table mt-3">
             <thead>
                 <tr>
-                    <th scope="col" style="width: 10%;">ไอดีสินค้า</th>
-                    <th scope="col">ชื่อสินค้า</th>
-                    <th scope="col" style="width: 10%;">ราคาสินค้า</th>
-                    <th scope="col">รูปสินค้า</th>
-                    <th scope="col" style="width: 15%;">รหัสประเภทสินค้า</th>
-                    <th scope="col" style="width: 10%;">วันที่แก้ไข</th>
-                    <th scope="col">แก้ไข</th>
-                    <th scope="col">ลบ</th>
+                    <th scope="col" style='width: 10%;'>ไอดีแอดมิน</th>
+                    <th scope="col" style='width: 15%;'>ชื่อ-สกุล</th>
+                    <th scope="col" style='width: 10%;'>บัญชีผู้ใช้</th>
+                    <th scope="col" style='width: 20%;'>รหัสผ่าน</th>
+                    <th scope="col" style='width: 10%;'>วันที่แก้ไข</th>
+                    <th scope="col" style='width: 10%;'>แก้ไข</th>
+                    <th scope="col" style='width: 10%;'>ลบ</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
                 require_once('../config/ConnectDB.php');
-                require_once('../controllers/Product.php');
+                require_once('../controllers/Admin.php');
 
                 $connObj = new ConnectDB();
                 $conn = $connObj->connectDB();
-                $productObj = new Product($conn);
-                $stmt = $productObj->getAllProducts();
+                $adminObj = new Admin($conn);
+                $stmt = $adminObj->getAllAdmin();
+
                 if ($stmt->rowCount() > 0) {
                     while ($rows = $stmt->fetch(PDO::FETCH_ASSOC)) {
                         extract($rows);
                         echo "<tr>
-                                    <td>" . $productId . "</td>
-                                    <td>" . $productName . "</td>
-                                    <td>" . number_format($productPrice) . " บาท</td>
-                                    <td><img src='../images/" . $productImage . "' style='width: 150px; height: 150px'></td>
-                                    <td>" . $categoryId . "</td>
+                                    <td>" . $adminId . "</td>
+                                    <td>" . $adminFirstname . " " . $adminLastname . "</td>
+                                    <td>" . $adminUsername . "</td>
+                                    <td><p style='word-break: break-word;'>" . $adminPassword . "</p></td>
                                     <td>" . $modifyDate . "</td>
-                                    <td><a class='btn btn-success' href='editProduct.php?id=" . $productId . "'>แก้ไข</a></td>
-                                    <td><a class='btn btn-danger' onclick='deleteProduct({$productId});'>ลบ</a></td>
+                                    <td><a class='btn btn-success' href='editAdmin.php?id=" . $adminId . "'>แก้ไข</a></td>
+                                    <td><a class='btn btn-danger' onclick='deleteAdmin({$adminId});'>ลบ</a></td>
                                 </tr>";
                     }
                 } else {
-                    echo "<tr>
-                            <td colspan='8' class='text-center'>ไม่มีข้อมูลสินค้า</td>
+                    echo "<tr style='text-align: center;'>
+                            <td colspan='7'>ไม่มีข้อมูล</td>
                           </tr>";
                 }
                 ?>
@@ -110,10 +106,10 @@
         </div>
     </nav>
     <script>
-        function deleteProduct(productId) {
+        function deleteAdmin(adminId) {
             Swal.fire({
-                title: "คุณต้องการลบสินค้านี้ไหม?",
-                text: "หากลบแล้วจะไม่มีสินค้านี้อีกต่อไป!",
+                title: "คุณต้องการลบแอดมินนี้ไหม?",
+                text: "หากลบแล้วจะไม่มีแอดมินนี้อีกต่อไป!",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
@@ -121,11 +117,11 @@
                 confirmButtonText: "Yes, delete it!"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire("ลบสินค้านี้สำเร็จแล้ว!",
-                        "สินค้านี้ถูกลบออกแล้ว",
+                    Swal.fire("ลบแอดมินนี้สำเร็จแล้ว!",
+                        "แอดมินนี้ถูกลบออกแล้ว",
                         "success"
                     ).then(() => {
-                        window.location.href = `deleteProduct.php?productId=${productId}`;
+                        window.location.href = `deleteAdmin.php?adminId=${adminId}`;
                     });
                 }
             });
