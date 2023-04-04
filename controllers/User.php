@@ -51,6 +51,30 @@
                 return false;
             }
         }  
+
+        public function updateUserByPassword(){
+            $strSql = 'UPDATE user_tb SET userFirstname = :userFirstname, userLastname = :userLastname, userName = :userName, userPassword = :userPassword, modifyDate = :modifyDate WHERE userId = :userId';
+            $stmt = $this->conn->prepare($strSql);
+            $password_hash = password_hash($this->userPassword, PASSWORD_DEFAULT);
+            $this->userFirstname = htmlspecialchars(strip_tags(stripslashes($this->userFirstname)));
+            $this->userLastname = htmlspecialchars(strip_tags(stripslashes($this->userLastname)));
+            $this->userName = htmlspecialchars(strip_tags(stripslashes($this->userName)));
+            $this->userPassword = htmlspecialchars(strip_tags(stripslashes($password_hash)));
+            $this->modifyDate = date('Y-m-d');
+            $this->userId = intval(strip_tags(stripslashes($this->userId)));
+            $stmt->bindParam(':userFirstname', $this->userFirstname);
+            $stmt->bindParam(':userLastname', $this->userLastname);
+            $stmt->bindParam(':userName', $this->userName);
+            $stmt->bindParam(':userPassword', $this->userPassword);
+            $stmt->bindParam(':modifyDate', $this->modifyDate);
+            $stmt->bindParam(':userId', $this->userId);
+            
+            if($stmt->execute()){
+                return true;
+            }else{
+                return false;
+            }
+        }
         
         // function to delete user
         public function deleteUserById(){

@@ -46,14 +46,14 @@
         </div>
     </nav>
     <?php
-        require_once('../config/ConnectDB.php');
-        require_once('../controllers/User.php');
-        $connObj = new ConnectDB();
-        $conn = $connObj->connectDB();
-        $userObj = new User($conn);
-        $userObj->userId = $_GET['id'];        
-        $stmt = $userObj->getUserById();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    require_once('../config/ConnectDB.php');
+    require_once('../controllers/User.php');
+    $connObj = new ConnectDB();
+    $conn = $connObj->connectDB();
+    $userObj = new User($conn);
+    $userObj->userId = $_GET['id'];
+    $stmt = $userObj->getUserById();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
     ?>
     <div class="container mt-5" style="width: 800px;">
         <h3 class="text-center">แก้ไขสมาชิก</h3>
@@ -72,6 +72,10 @@
                 <label class="form-label">บัญชีผู้ใช้:</label>
                 <input type="text" class="form-control" name="userName" required value="<?php echo $row['userName']; ?>">
             </div>
+            <div class="mb-3">
+                <label class="form-label">รหัสผ่าน:</label>
+                <input type="password" class="form-control" name="userPassword">
+            </div>
             <button name="editUser" type="submit" class="btn btn-primary">แก้ไขสมาชิก</button>
             &nbsp;&nbsp;&nbsp;
             <a href="showUser.php" class="btn btn-success">แสดงสมาชิกทั้งหมด</a>
@@ -85,13 +89,14 @@
     $userObj = new User($conn);
 
     if (isset($_POST['editUser'])) {
-        $userObj->userId = $_GET['id'];
-        $userObj->userFirstname = $_POST['userFirstname'];
-        $userObj->userLastname = $_POST['userLastname'];
-        $userObj->userName = $_POST['userName'];
+        if (empty($_POST['userPassword'])) {
+            $userObj->userId = $_GET['id'];
+            $userObj->userFirstname = $_POST['userFirstname'];
+            $userObj->userLastname = $_POST['userLastname'];
+            $userObj->userName = $_POST['userName'];
 
-        if ($userObj->updateUserById()) {
-            echo "<script>
+            if ($userObj->updateUserById()) {
+                echo "<script>
                     Swal.fire(
                         'แก้ไขสมาชิกสำเร็จแล้ว!',
                         'คุณสามารถดูสมาชิกในระบบได้',
@@ -100,6 +105,25 @@
                         window.location.href = 'showUser.php';
                     });
                   </script>";
+            }
+        } else {
+            $userObj->userId = $_GET['id'];
+            $userObj->userFirstname = $_POST['userFirstname'];
+            $userObj->userLastname = $_POST['userLastname'];
+            $userObj->userName = $_POST['userName'];
+            $userObj->userPassword = $_POST['userPassword'];
+
+            if ($userObj->updateUserByPassword()) {
+                echo "<script>
+                    Swal.fire(
+                        'แก้ไขสมาชิกสำเร็จแล้ว!',
+                        'คุณสามารถดูสมาชิกในระบบได้',
+                        'success'
+                    ).then(() => {
+                        window.location.href = 'showUser.php';
+                    });
+                  </script>";
+            }
         }
     }
     ?>

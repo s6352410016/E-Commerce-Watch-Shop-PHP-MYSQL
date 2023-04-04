@@ -72,6 +72,10 @@
                 <label class="form-label">บัญชีผู้ใช้:</label>
                 <input type="text" class="form-control" name="adminUsername" required value="<?php echo $row['adminUsername']; ?>">
             </div>
+            <div class="mb-3">
+                <label class="form-label">รหัสผ่าน:</label>
+                <input type="password" class="form-control" name="adminPassword">
+            </div>
             <button name="editAdmin" type="submit" class="btn btn-primary">แก้ไขแอดมิน</button>
             &nbsp;&nbsp;&nbsp;
             <a href="showAdmin.php" class="btn btn-success">แสดงแอดมินทั้งหมด</a>
@@ -85,13 +89,14 @@
     $adminObj = new Admin($conn);
 
     if (isset($_POST['editAdmin'])) {
-        $adminObj->adminId = $_GET['id'];
-        $adminObj->adminFirstname = $_POST['adminFirstname'];
-        $adminObj->adminLastname = $_POST['adminLastname'];
-        $adminObj->adminUsername = $_POST['adminUsername'];
+        if (empty($_POST['adminPassword'])) {
+            $adminObj->adminId = $_GET['id'];
+            $adminObj->adminFirstname = $_POST['adminFirstname'];
+            $adminObj->adminLastname = $_POST['adminLastname'];
+            $adminObj->adminUsername = $_POST['adminUsername'];
 
-        if ($adminObj->updateAdminById()) {
-            echo "<script>
+            if ($adminObj->updateAdminById()) {
+                echo "<script>
                     Swal.fire(
                         'แก้ไขแอดมินสำเร็จแล้ว!',
                         'คุณสามารถดูแอดมินในระบบได้',
@@ -100,6 +105,25 @@
                         window.location.href = 'showAdmin.php';
                     });
                   </script>";
+            }
+        } else {
+            $adminObj->adminId = $_GET['id'];
+            $adminObj->adminFirstname = $_POST['adminFirstname'];
+            $adminObj->adminLastname = $_POST['adminLastname'];
+            $adminObj->adminUsername = $_POST['adminUsername'];
+            $adminObj->adminPassword = $_POST['adminPassword'];
+
+            if ($adminObj->updateAdminByPassword()) {
+                echo "<script>
+                    Swal.fire(
+                        'แก้ไขแอดมินสำเร็จแล้ว!',
+                        'คุณสามารถดูแอดมินในระบบได้',
+                        'success'
+                    ).then(() => {
+                        window.location.href = 'showAdmin.php';
+                    });
+                  </script>";
+            }
         }
     }
     ?>

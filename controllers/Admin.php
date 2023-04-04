@@ -56,6 +56,30 @@ class Admin
         }
     }
 
+    public function updateAdminByPassword(){
+        $strSql = 'UPDATE admin_tb SET adminFirstname = :adminFirstname, adminLastname = :adminLastname, adminUsername = :adminUsername, adminPassword = :adminPassword ,  modifyDate = :modifyDate WHERE adminId = :adminId';
+        $stmt = $this->conn->prepare($strSql);
+        $password_hash = password_hash($this->adminPassword, PASSWORD_DEFAULT);
+        $this->adminFirstname = htmlspecialchars(strip_tags(stripslashes($this->adminFirstname)));
+        $this->adminLastname = htmlspecialchars(strip_tags(stripslashes($this->adminLastname)));
+        $this->adminUsername = htmlspecialchars(strip_tags(stripslashes($this->adminUsername)));
+        $this->adminPassword = htmlspecialchars(strip_tags(stripslashes($password_hash)));
+        $this->modifyDate = date('Y-m-d');
+        $this->adminId = intval(strip_tags(stripslashes($this->adminId)));
+        $stmt->bindParam(':adminFirstname', $this->adminFirstname);
+        $stmt->bindParam(':adminLastname', $this->adminLastname);
+        $stmt->bindParam(':adminUsername', $this->adminUsername);
+        $stmt->bindParam(':adminPassword', $this->adminPassword);
+        $stmt->bindParam(':modifyDate', $this->modifyDate);
+        $stmt->bindParam(':adminId', $this->adminId);
+
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function deleteAdminById()
     {
         $strSql = 'DELETE FROM admin_tb WHERE adminId = :adminId';
